@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <script src="/static/layuimini/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="realname" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container" id="gongju">
+<!--                <a th:if="${session.user.realname}" ><span th:text="${session.user.realname}"/></a>-->
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="deleteSelect">删除选中行数据</button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar" aria-invalid="gongju1">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+
+        </script>
+        <script>
+
+        </script>
+
+    </div>
+</div>
+<script src="../lib/layui-v/layui.js" charset="utf-8"></script>
+<script>
+    $(function (){
+        $.ajax({
+            url: '/users/findByUser',
+            type: 'post',
+            success: function (data) {
+                if (data.msg != 1) {
+                    layer.msg("登录过期请重新登录", {icon: 5});
+                    window.self.location = "/";
+                    return;
+                }
+            }
+        })
+    })
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        $(function (){
+            $.ajax({
+                url: '/users/findByUser',
+                type: 'post',
+                success: function (data) {
+                    if (data.msg != 1) {
+                        layer.msg("登录过期请重新登录", {icon: 5});
+                        window.self.location = "/";
+                        return;
+                    }else{
+                        if (data.role!="管理员"){
+                            layer.msg("对不起您无权限查看", {icon: 5});
+                        }else{
+                            table.render({
+                                elem: '#currentTableId',
+                                url: '/users/findByPage',
+                                toolbar: '#toolbarDemo',
+                                defaultToolbar: ['filter', 'exports', 'print', {
+                                    title: '提示',
+                                    icon: 'layui-icon-tips'
+                                }]
+                                ,id:"uid"
+                                ,cols: [[
+                                    {type: 'checkbox', fixed: 'left',align:'center'}
+                                    // ,{field:'custId', title:'ID', width:'10%', fixed: 'left', unresize: true, sort: true, totalRowText: '合计'}
+                                    ,{field:'realname', title:'姓名', width:'15%' }
+                                    // ,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+                                    //         return '<em>'+ res.email +'</em>'
+                                    //     }}
+                                    ,{field:'username', title:'账号', width:'15%', sort: true, totalRow: true}
+                                    ,{field:'password', title:'密码', width:'15%',  sort: true}
+                                    ,{field:'phone', title:'手机号', width:'15%',  sort: true}
+                                    ,{field:'role', title:'角色', width:'15%', sort: true, totalRow: true}
+                                    ,{title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                                ]], page: true
+
+                            });
+                        }
+                    }
+                }
+            })
+        })
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            // layer.alert(result, {
+            //     title: '最终的搜索信息'
+            // });
+
+            // 执行搜索重载
+
+            table.reload('uid',{
+                url: '/users/findByTJ'
+                ,method:'post'
+                ,where: {
+                    'realname':data.field.realname,
+
+                }
+                ,contentType: 'application/json'
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            })
+            return false;
+
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'add') {  // 监听添加操作
+                $.ajax({
+                    url: '/users/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            // $.messager.alert({
+                            //     title:'提示',
+                            //     msg:'读取数据异常：'+map.msg
+                            // });
+                            return;
+                        }else {
+                            if (data.role=="普通用户"){
+                                layer.msg("您没有权限操作", {icon: 5});
+
+                            }else{
+                                var index = layer.open({
+                                    title: '添加用户',
+                                    type: 2,
+                                    shade: 0.2,
+                                    maxmin:true,
+                                    shadeClose: true,
+                                    area: ['100%', '100%'],
+                                    content: '../page/table/addusers.html',
+                                });
+                                $(window).on("resize", function () {
+                                    layer.full(index);
+                                });
+                            }
+                        }
+                    }
+                })
+
+            } else if (obj.event === 'deleteSelect') {  // 监听删除操作
+                $.ajax({
+                    url: '/users/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            return;
+                        }else {
+                            if (data.role=="普通用户"){
+                                layer.msg("您没有权限操作", {icon: 5});
+
+                            }else{
+                                var data = checkStatus.data;
+                                var id="";
+                                if(data.length > 0) {
+                                    for (var i=0;i<data.length;i++) {
+                                        id+=data[i].uid+",";
+                                    }
+                                    console.log(id);
+
+                                    layer.confirm('确定删除选中的数据？', {icon: 3, title: '提示信息'}, function (index) {
+                                        $.post('/users/deleteSelect',{"id":id},function(data){
+                                            if (data.msg==1){
+                                                layer.msg("删除成功", {icon: 6});
+                                                layer.close(index);
+                                                // window.parent.location.reload();//修改成功后刷新父界面
+                                                table.render({
+                                                    elem: '#currentTableId',
+                                                    url: '/users/findByPage',
+                                                    toolbar: '#toolbarDemo',
+                                                    defaultToolbar: ['filter', 'exports', 'print', {
+                                                        title: '提示',
+                                                        icon: 'layui-icon-tips'
+                                                    }]
+                                                    ,id:"uid"
+                                                    ,cols: [[
+                                                        {type: 'checkbox', fixed: 'left',align:'center'}
+                                                        // ,{field:'custId', title:'ID', width:'10%', fixed: 'left', unresize: true, sort: true, totalRowText: '合计'}
+                                                        ,{field:'realname', title:'姓名', width:'10%' }
+                                                        // ,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+                                                        //         return '<em>'+ res.email +'</em>'
+                                                        //     }}
+                                                        ,{field:'username', title:'账号', width:'20%', sort: true, totalRow: true}
+                                                        ,{field:'password', title:'密码', width:'20%',  sort: true}
+                                                        ,{field:'phone', title:'手机号', width:'20%',  sort: true}
+                                                        ,{field:'role', title:'角色', width:'20%', sort: true, totalRow: true}
+                                                        ,{title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                                                    ]], page: true
+                                                });
+                                            }
+
+                                        });
+                                    })
+                                }else{
+                                    layer.msg('请选择需要删除的数据',{icon:5});
+                                }
+                            }
+                        }
+                    }
+                })
+
+            }
+
+        });
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'edit') {
+                $.ajax({
+                    url: '/users/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            // $.messager.alert({
+                            //     title:'提示',
+                            //     msg:'读取数据异常：'+map.msg
+                            // });
+                            return;
+                        }else {
+                            if (data.role=="普通用户"){
+                                layer.msg("您没有权限操作", {icon: 5});
+
+                            }else{
+                                var data = obj.data;
+                                var index = layer.open({
+                                    title: '编辑用户',
+                                    type: 2,
+                                    shade: 0.2,
+                                    maxmin:true,
+                                    shadeClose: true,
+                                    area: ['100%', '100%'],
+                                    content: '../page/table/editusers.html',
+                                    success: function (layero, index) {
+                                        //找到它的子窗口的body
+                                        let body = layer.getChildFrame('body', index);
+                                        // var body = layer.getChildFrame('body', table);  //巧妙的地方在这里哦
+                                        // //为子窗口元素赋值
+                                        body.contents().find("#uid").val(data.uid);
+                                        body.contents().find("#realname").val(data.realname);
+                                        body.contents().find("#username").val(data.username);
+                                        body.contents().find("#password").val(data.password);
+                                        body.contents().find("#role").val(data.role);
+                                        body.contents().find("#phone").val(data.phone);
+
+                                    }
+                                });
+                                $(window).on("resize", function () {
+                                    layer.full(index);
+                                });
+                                return false;
+                            }
+                        }
+                    }
+                })
+
+            } else if (obj.event === 'delete') {
+
+                $.ajax({
+                    url: '/users/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            // $.messager.alert({
+                            //     title:'提示',
+                            //     msg:'读取数据异常：'+map.msg
+                            // });
+                            return;
+                        }else {
+                            if (data.role=="普通用户"){
+                                layer.msg("您没有权限操作", {icon: 5});
+                            }else {
+                                var data = obj.data;
+                                var d = {"uid": data.uid};
+                                var datas = JSON.stringify(d);
+                                layer.confirm('真的删除行么',{icon:3, title:'提示信息'}, function (index) {
+                                    $.ajax({
+                                        url: "/users/delete",
+                                        type: 'post',
+                                        data: datas,
+                                        contentType: "application/json;charset=utf-8",
+                                        dataType: 'json',
+                                        async: false,//false为同步，这个Ajax请求将整个浏览器锁死
+                                        success: function (data) {
+                                            if (data.msg == 1) {
+                                                //删除这一行
+                                                obj.del();
+                                                //关闭弹框
+                                                layer.close(index);
+                                                layer.msg("删除成功", {icon: 6});
+                                            } else {
+                                                layer.msg("删除失败", {icon: 5});
+                                            }
+                                        }
+                                    });
+                                    return false;
+                                });
+                            }
+                        }
+                    }
+                })
+
+            }
+        });
+
+
+    });
+</script>
+
+</body>
+</html>

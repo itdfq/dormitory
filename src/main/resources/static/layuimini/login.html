@@ -81,28 +81,33 @@
 </head>
 <body>
 
-<div class="logo-box">
-<div class="login" style="">
-<div class="bxs-row" style="text-align:center;">
-<img id="logo" th:src="@{/static/layuimini/images/login/logo.jpg}" style="width:72px;"><span class="tips" style="color:red;">用户登录</span>
-</div>
-<div class="bxs-row">
-<input type="text" class="username" id="username" placeholder="用户名" value="admin">
-<p class=" err err-username"></p>
-</div>
-<div class="bxs-row">
-<input type="password" class="password" id="password" placeholder="密码">
-<p class="err err-password"></p>
-</div>
-<div class="bxs-row">
-<input type="submit" class="submit btn" value="登录">
-</div>
-</div>
-<div class="verBox">
-<div id="imgVer" style="display:inline-block;"></div>
-</div>
-</div>
+        <div class="logo-box">
+        <div class="login" style="">
+        <div class="bxs-row" style="text-align:center;">
+        <img id="logo" th:src="@{/static/layuimini/images/login/logo.jpg}" style="width:72px;"><span class="tips" style="color:red;">用户登录</span>
+        </div>
+        <div class="bxs-row">
+        <input type="text" class="username" id="username" placeholder="用户名" value="admin">
+        <p class=" err err-username"></p>
+        </div>
+        <div class="bxs-row">
+        <input type="password" class="password" id="password" placeholder="密码">
+        <p class="err err-password"></p>
+        </div>
+        <div class="bxs-row">
+        <input type="submit" class="submit btn" value="登录">
+        </div>
+        </div>
+        <div class="verBox">
+        <div id="imgVer" style="display:inline-block;"></div>
+        </div>
+        </div>
 <script type="text/javascript">
+        //禁止屏幕滑动
+        $("body").on("touchmove", function (event) {
+            event.preventDefault()
+        }, false)
+
         imgVer({
             el:'$("#imgVer")',
             width:'260',
@@ -138,6 +143,8 @@
 
                                 // alert("普通用户")
                                 window.self.location = "/home";
+                                //恢复滑动
+                                $("body").off("touchmove")
                             // }else {
                             //     // window.self.location = "/admin";
                             //     alert("管理员登录");

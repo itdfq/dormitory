@@ -3,7 +3,9 @@ package com.itdfq.dormitory.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -24,6 +26,15 @@ public class RouterContrller {
     // 登陆页（首页）
     @GetMapping("/")
     public String indexPage() {
+        return "login";
+    }
+
+
+    // 退出系统
+    @RequestMapping("/logout")
+    public String administratorLogout(HttpSession session) {
+        session.setAttribute("user", null);
+//        session.setAttribute("adminName",null);
         return "login";
     }
 

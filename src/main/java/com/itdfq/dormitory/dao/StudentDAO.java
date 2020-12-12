@@ -18,7 +18,7 @@ public interface StudentDAO {
     @Select("select * from student  ")
     List<Student> findByPage();
 
-    @Select("select * from student where sno like concat('%',#{sno},'%')  ")
+    @Select("select * from student where sname like concat('%',#{sname},'%')  ")
     List<Student> findByTJ(Student student);
 
     @Delete("delete from  student s where sid = #{sid}")

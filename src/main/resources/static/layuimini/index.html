@@ -32,6 +32,7 @@
                     if (data.msg != 1) {
                         layer.msg("登录过期请重新登录", {icon: 5});
                         window.self.location = "/";
+
                         return;
                     }
                 }
@@ -90,7 +91,7 @@
                             <hr>
                         </dd>
                         <dd>
-                            <a href="javascript:;" class="login-out">退出登录</a>
+                            <a href="javascript: window.self.location = '/logout'" class="login-out">退出登录</a>
                         </dd>
                     </dl>
                 </li>

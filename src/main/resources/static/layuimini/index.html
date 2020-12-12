@@ -91,7 +91,7 @@
                             <hr>
                         </dd>
                         <dd>
-                            <a href="javascript: window.self.location = '/logout'" class="login-out">退出登录</a>
+                            <a href="javascript:;" class="login-out">退出登录</a>
                         </dd>
                     </dl>
                 </li>
@@ -179,7 +179,7 @@
 
         $('.login-out').on("click", function () {
             layer.msg('退出登录成功', function () {
-                window.self.location = "/";
+                window.self.location = '/logout'
             });
         });
     });

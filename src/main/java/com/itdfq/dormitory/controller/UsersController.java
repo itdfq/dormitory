@@ -29,45 +29,6 @@ public class UsersController {
     private UsersService usersService;
 
     private Map<String,Object> map = new HashMap<>();
-
-
-    @RequestMapping("/findByPage")
-    public Map<String,Object> findByPage(@RequestParam(required = false, defaultValue = "1") int page,  @RequestParam(required = false, defaultValue = "10") int limit){
-        PageHelper.startPage(page, limit);
-        map.clear();
-        try {
-            List<Users> users = usersService.findByPage();
-            PageInfo<Users> pageInfo = new PageInfo<>(users);
-            map.put("count",pageInfo.getTotal());
-            map.put("data",pageInfo.getList());
-            map.put("code",0);
-            map.put("msg",1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            map.put("msg",e.getMessage());
-        }
-        return map;
-    }
-
-    @RequestMapping("/findByTJ")
-    public Map<String,Object> findByTJ(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "10") int limit, @RequestBody Users users){
-        PageHelper.startPage(page, limit);
-        map.clear();
-
-        try {
-            List<Users> byTJ = usersService.findByTJ(users);
-            PageInfo<Users> pageInfo = new PageInfo<>(byTJ);
-            map.put("count",pageInfo.getTotal());
-            map.put("data",pageInfo.getList());
-            map.put("code",0);
-            map.put("msg",1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            map.put("msg",e.getMessage());
-        }
-        return map;
-    }
-
     @RequestMapping("/login")
     public Map<String,Object> login(@RequestBody Users users ,HttpServletRequest request){
         map.clear();
@@ -113,6 +74,46 @@ public class UsersController {
         return map;
     }
 
+
+    @RequestMapping("/findByPage")
+    public Map<String,Object> findByPage(@RequestParam(required = false, defaultValue = "1") int page,  @RequestParam(required = false, defaultValue = "10") int limit){
+        PageHelper.startPage(page, limit);
+        map.clear();
+        try {
+            List<Users> users = usersService.findByPage();
+            PageInfo<Users> pageInfo = new PageInfo<>(users);
+            map.put("count",pageInfo.getTotal());
+            map.put("data",pageInfo.getList());
+            map.put("code",0);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+    //条件查询
+    @RequestMapping("/findByTJ")
+    public Map<String,Object> findByTJ(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "10") int limit, @RequestBody Users users){
+        PageHelper.startPage(page, limit);
+        map.clear();
+
+        try {
+            List<Users> byTJ = usersService.findByTJ(users);
+            PageInfo<Users> pageInfo = new PageInfo<>(byTJ);
+            map.put("count",pageInfo.getTotal());
+            map.put("data",pageInfo.getList());
+            map.put("code",0);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+
+    //删除操作
     @RequestMapping("/delete")
     public Map<String,Object> delete(@RequestBody Users users){
         System.out.println(users);
@@ -126,6 +127,7 @@ public class UsersController {
         }
         return map;
     }
+//    更新操作
     @RequestMapping("/update")
     public Map<String,Object> update(@RequestBody  Users users){
         map.clear();
@@ -138,7 +140,7 @@ public class UsersController {
         }
         return map;
     }
-
+    //插入操作
     @RequestMapping("/insert")
     public Map<String,Object> insert(@RequestBody  Users users){
         map.clear();
@@ -152,9 +154,7 @@ public class UsersController {
         return map;
     }
 
-    /*
-    批量删除
-     */
+//    批量删除
     @RequestMapping("/deleteSelect")
     public Map<String,Object> deleteSelect(String id){
         map.clear();

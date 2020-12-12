@@ -105,6 +105,7 @@ public class StudentController {
     }
     @RequestMapping("/update")
     public Map<String,Object> update(@RequestBody  Student student){
+        System.out.println(student);
         map.clear();
         try {
             studentService.update(student);

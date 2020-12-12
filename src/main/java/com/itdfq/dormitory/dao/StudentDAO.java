@@ -21,13 +21,13 @@ public interface StudentDAO {
     @Select("select * from student where sname like concat('%',#{sname},'%')  ")
     List<Student> findByTJ(Student student);
 
-    @Delete("delete from  student s where sid = #{sid}")
+    @Delete("delete from  student  where sid = #{sid}")
     void delete(int sid);
 
     @Insert("insert into student(sno,sname,sphone,sclass,daddress,ssushe) values(#{sno},#{sname},#{sphone},#{sclass},#{daddress},#{ssushe})")
     void insert(Student student);
 
-    @Update("update student set sno=#{sno},sphone=#{sphone},sclass=#{sclass},daddress=#{daddress},ssushe=#{ssushe} where sid=#{sid}")
+    @Update("update student set sno=#{sno},sname=#{sname},sphone=#{sphone},sclass=#{sclass},daddress=#{daddress},ssushe=#{ssushe} where sid=#{sid}")
     void update(Student student);
 
     @Delete({"<script>" +

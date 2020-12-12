@@ -87,12 +87,12 @@
         <img id="logo" th:src="@{/static/layuimini/images/login/logo.jpg}" style="width:72px;"><span class="tips" style="color:red;">用户登录</span>
         </div>
         <div class="bxs-row">
-        <input type="text" class="username" id="username" placeholder="用户名" value="admin">
-        <p class=" err err-username"></p>
+                <input type="text" class="username" id="username" placeholder="用户名" value="admin">
+                  <p class=" err err-username"></p>
         </div>
         <div class="bxs-row">
-        <input type="password" class="password" id="password" placeholder="密码">
-        <p class="err err-password"></p>
+                <input type="password" class="password" id="password" placeholder="密码">
+                 <p class="err err-password"></p>
         </div>
         <div class="bxs-row">
         <input type="submit" class="submit btn" value="登录">
@@ -154,11 +154,7 @@
                             $("#logo").attr("th:src",'@{/static/layuimini/images/login/login-err.png}')
                         }
                     }
-
-
                 })
-
-
             },
             error:function () {
                 //alert('错误什么都不执行')
